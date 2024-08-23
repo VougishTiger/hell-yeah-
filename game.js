@@ -16,7 +16,7 @@ const images = {
     character: new Image()
 };
 
-const scaleFactor = 10; // Scaling factor based on character size
+const scaleFactor = 3; // Scaling factor based on character size
 
 images.background.src = './sprites/maps/cave.png';
 images.character.src = './sprites/Commissions/Rogue.png';
@@ -47,14 +47,14 @@ const character = {
     height: 60, // Scaled size on the canvas
     velocityX: 0,
     velocityY: 0,
-    speed: 5,
+    speed: 1,
     isJumping: false,
     isAlive: true,
     frameX: 0,
     frameY: 0,
     frameWidth: 16, // Original frame width
     frameHeight: 16, // Original frame height
-    frameSpeed: 5, // Control the animation speed
+    frameSpeed: 15, // Control the animation speed
     currentFrame: 0
 };
 
@@ -143,14 +143,14 @@ const drawCharacter = () => {
     if (character.isAlive) {
         ctx.drawImage(
             images.character,
-            character.frameX * character.frameWidth, // Source X
+            character.frameX * character.frameWidth, // Soasdurce X
             character.frameY * character.frameHeight, // Source Y
             character.frameWidth, // Source Width
             character.frameHeight, // Source Height
-            character.x, // Destination X
-            character.y, // Destination Y
-            character.width, // Destination Width
-            character.height // Destination Height
+            character.x,
+            character.y, 
+            character.width, 
+            character.height 
         );
     }
 };
