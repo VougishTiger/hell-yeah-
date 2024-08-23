@@ -1,0 +1,36 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.8.2
+2 info using node@v20.15.1
+3 silly config load:file:C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\aripi\Onedrive\Desktop\Documents\Coursework\platformer\.npmrc
+5 silly config load:file:C:\Users\aripi\.npmrc
+6 silly config load:file:C:\Users\aripi\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm run dev
+8 verbose argv "run" "dev"
+9 verbose logfile logs-max:10 dir:C:\Users\aripi\Onedrive\Desktop\Documents\Coursework\platformer\tmpnodejsnpm-cache\_logs\2024-08-23T07_15_04_774Z-
+10 verbose logfile C:\Users\aripi\Onedrive\Desktop\Documents\Coursework\platformer\tmpnodejsnpm-cache\_logs\2024-08-23T07_15_04_774Z-debug-0.log
+11 silly logfile done cleaning log files
+12 verbose stack Error: Could not read package.json: Error: ENOENT: no such file or directory, open 'C:\Users\aripi\Onedrive\Desktop\Documents\Coursework\platformer\package.json'
+12 verbose stack     at async open (node:internal/fs/promises:639:25)
+12 verbose stack     at async readFile (node:internal/fs/promises:1249:14)
+12 verbose stack     at async read (C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\node_modules\@npmcli\package-json\lib\read-package.js:9:18)
+12 verbose stack     at async PackageJson.load (C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\node_modules\@npmcli\package-json\lib\index.js:130:31)
+12 verbose stack     at async PackageJson.normalize (C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\node_modules\@npmcli\package-json\lib\index.js:116:5)
+12 verbose stack     at async #run (C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\lib\commands\run-script.js:85:13)
+12 verbose stack     at async RunScript.exec (C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\lib\commands\run-script.js:39:7)
+12 verbose stack     at async Npm.exec (C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\lib\npm.js:207:9)
+12 verbose stack     at async module.exports (C:\Users\aripi\AppData\Roaming\npm\node_modules\npm\lib\cli\entry.js:74:5)
+13 error code ENOENT
+14 error syscall open
+15 error path C:\Users\aripi\Onedrive\Desktop\Documents\Coursework\platformer\package.json
+16 error errno -4058
+17 error enoent Could not read package.json: Error: ENOENT: no such file or directory, open 'C:\Users\aripi\Onedrive\Desktop\Documents\Coursework\platformer\package.json'
+18 error enoent This is related to npm not being able to find a file.
+18 error enoent
+19 verbose cwd C:\Users\aripi\Onedrive\Desktop\Documents\Coursework\platformer
+20 verbose os Windows_NT 10.0.22631
+21 verbose node v20.15.1
+22 verbose npm  v10.8.2
+23 verbose exit -4058
+24 verbose code -4058
+25 error A complete log of this run can be found in: C:\Users\aripi\Onedrive\Desktop\Documents\Coursework\platformer\tmpnodejsnpm-cache\_logs\2024-08-23T07_15_04_774Z-debug-0.log

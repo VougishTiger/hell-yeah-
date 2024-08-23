@@ -5,38 +5,87 @@ canvas.width = 800;
 canvas.height = 400;
 
 const groundHeight = 50;
-const gravity = 0.5;  
+const gravity = 0.5;
+let scrollOffset = 0;
+
+const images = {
+    background: new Image(),
+    platform: new Image(),
+    obstacle: new Image(),
+    enemy: new Image(),
+    character: new Image()
+};
+
+const scaleFactor = 10; // Scaling factor based on character size
+
+images.background.src = './sprites/maps/cave.png';
+images.character.src = './sprites/Commissions/Rogue.png';
+images.platform.src = './sprites/Objects/Ground0.png';
+images.obstacle.src = './sprites/Objects/Trap0.png';
+images.enemy.src = './sprites/Characters/Demon0.png';
+
+
+let imagesLoaded = 0;
+const totalImages = Object.keys(images).length;
+
+const imageLoaded = () => {
+    imagesLoaded++;
+    if (imagesLoaded === totalImages) {
+        gameLoop(); // Start the game loop once all images are loaded
+    }
+};
+
+Object.values(images).forEach(image => {
+    image.onload = imageLoaded;
+    image.onerror = () => console.error(`Failed to load image: ${image.src}`);
+});
+
 const character = {
     x: 50,
-    y: canvas.height - groundHeight - 40,
-    width: 30,
-    height: 40,
-    color: 'red',
+    y: canvas.height - groundHeight - 60, // Adjust based on character height
+    width: 30, // Scaled size on the canvas
+    height: 60, // Scaled size on the canvas
     velocityX: 0,
     velocityY: 0,
     speed: 5,
     isJumping: false,
-    isAlive: true
+    isAlive: true,
+    frameX: 0,
+    frameY: 0,
+    frameWidth: 16, // Original frame width
+    frameHeight: 16, // Original frame height
+    frameSpeed: 5, // Control the animation speed
+    currentFrame: 0
 };
 
+// Keep the original positions but scale the dimensions
 const platforms = [
     { x: 100, y: 300, width: 100, height: 10 },
     { x: 250, y: 250, width: 100, height: 10 },
     { x: 400, y: 200, width: 100, height: 10 },
     { x: 550, y: 150, width: 100, height: 10 }
-];
+].map(platform => ({
+    x: platform.x, // Keep position the same
+    y: platform.y, // Keep position the same
+    width: platform.width * scaleFactor,
+    height: platform.height * scaleFactor
+}));
 
 const obstacles = [
     { x: 200, y: canvas.height - groundHeight - 20, width: 20, height: 20 },
     { x: 450, y: canvas.height - groundHeight - 20, width: 20, height: 20 }
-];
+].map(obstacle => ({
+    x: obstacle.x, // Keep position the same
+    y: obstacle.y, // Keep position the same
+    width: obstacle.width * scaleFactor,
+    height: obstacle.height * scaleFactor
+}));
 
 const enemy = {
     x: 600,
-    y: canvas.height - groundHeight - 30,
-    width: 30,
-    height: 30,
-    color: 'purple',
+    y: canvas.height - groundHeight - (30 * scaleFactor), // Keep position on ground
+    width: 16 * scaleFactor, // Scaled to match character size
+    height: 16 * scaleFactor, // Scaled to match character size
     direction: 1,
     speed: 2
 };
@@ -63,34 +112,46 @@ document.addEventListener('keyup', (e) => {
     if (e.code === 'ArrowLeft') keys.left = false;
 });
 
+const drawBackground = () => {
+    ctx.drawImage(images.background, -scrollOffset, 0, canvas.width, canvas.height);
+    ctx.drawImage(images.background, canvas.width - scrollOffset, 0, canvas.width, canvas.height);
+    if (scrollOffset >= canvas.width) scrollOffset = 0;
+};
+
 const drawGround = () => {
     ctx.fillStyle = '#8B4513';
     ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 };
 
 const drawPlatforms = () => {
-    ctx.fillStyle = '#A9A9A9';
     platforms.forEach(platform => {
-        ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+        ctx.drawImage(images.platform, 0, 0, images.platform.width, images.platform.height, platform.x - scrollOffset, platform.y, platform.width, platform.height);
     });
 };
 
 const drawObstacles = () => {
-    ctx.fillStyle = 'black';
     obstacles.forEach(obstacle => {
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        ctx.drawImage(images.obstacle, 0, 0, images.obstacle.width, images.obstacle.height, obstacle.x - scrollOffset, obstacle.y, obstacle.width, obstacle.height);
     });
 };
 
 const drawEnemy = () => {
-    ctx.fillStyle = enemy.color;
-    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+    ctx.drawImage(images.enemy, 0, 0, images.enemy.width, images.enemy.height, enemy.x - scrollOffset, enemy.y, enemy.width, enemy.height);
 };
 
 const drawCharacter = () => {
     if (character.isAlive) {
-        ctx.fillStyle = character.color;
-        ctx.fillRect(character.x, character.y, character.width, character.height);
+        ctx.drawImage(
+            images.character,
+            character.frameX * character.frameWidth, // Source X
+            character.frameY * character.frameHeight, // Source Y
+            character.frameWidth, // Source Width
+            character.frameHeight, // Source Height
+            character.x, // Destination X
+            character.y, // Destination Y
+            character.width, // Destination Width
+            character.height // Destination Height
+        );
     }
 };
 
@@ -118,9 +179,11 @@ const checkObstacleCollision = () => {
 };
 
 const checkEnemyCollision = () => {
-    if (character.x < enemy.x + enemy.width &&
-        character.x + character.width > enemy.x &&
-        character.y + character.height > enemy.y) {
+    const buffer = 5; // Add some buffer space to prevent premature collisions
+    if (character.x + buffer < enemy.x + enemy.width &&
+        character.x + character.width - buffer > enemy.x &&
+        character.y + buffer < enemy.y + enemy.height &&
+        character.y + character.height - buffer > enemy.y) {
         character.isAlive = false;
     }
 };
@@ -134,9 +197,16 @@ const updateEnemyPosition = () => {
 
 const updateCharacterPosition = () => {
     if (character.isAlive) {
-        if (keys.right) character.velocityX = character.speed;
-        else if (keys.left) character.velocityX = -character.speed;
-        else character.velocityX = 0;
+        if (keys.right) {
+            character.velocityX = character.speed;
+            character.frameY = 2; // Assuming row 2 is walking right
+        } else if (keys.left) {
+            character.velocityX = -character.speed;
+            character.frameY = 1; // Assuming row 1 is walking left
+        } else {
+            character.velocityX = 0;
+            character.frameY = 0; // Assuming row 0 is idle
+        }
 
         character.velocityY += gravity;
         character.x += character.velocityX;
@@ -154,11 +224,21 @@ const updateCharacterPosition = () => {
 
         if (character.x < 0) character.x = 0;
         if (character.x + character.width > canvas.width) character.x = canvas.width - character.width;
+
+        scrollOffset += character.velocityX;
+
+        // Handle animation frame updates
+        character.currentFrame++;
+        if (character.currentFrame >= character.frameSpeed) {
+            character.frameX = (character.frameX + 1) % 4; // Cycle through the frames
+            character.currentFrame = 0;
+        }
     }
 };
 
 const gameLoop = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
     drawGround();
     drawPlatforms();
     drawObstacles();
@@ -169,5 +249,3 @@ const gameLoop = () => {
 
     requestAnimationFrame(gameLoop);
 };
-
-gameLoop();
