@@ -1,0 +1,15 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #87CEEB; 
+}
+
+#gameCanvas {
+  border: 1px solid black;
+  background-color: #7CFC00; 
+}
